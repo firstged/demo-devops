@@ -1,15 +1,472 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 
 <head>
-    <title>Test DevOps</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Lettre Secrète - Zen Edition</title>
+    <style>
+        :root {
+            /* Palette Zen : Bleu Ciel, Blanc, Gris Ardoise */
+            --bg-gradient-start: #e0f2fe;
+            --bg-gradient-end: #bae6fd;
+            --primary: #0ea5e9;
+            /* Bleu ciel vif */
+            --glass: rgba(255, 255, 255, 0.85);
+            --text: #334155;
+            /* Gris ardoise */
+            --error: #f43f5e;
+            /* Rose doux */
+            --success: #10b981;
+            /* Vert émeraude */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- FOND ANIMÉ (BULLES) --- */
+        .bubbles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            color: var(--primary);
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            animation: floatUp linear infinite;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.8;
+            }
+
+            90% {
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: translateY(-120vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* --- CARTE DU JEU (Glassmorphism) --- */
+        .game-card {
+            position: relative;
+            z-index: 10;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 3rem;
+            border-radius: 2rem;
+            box-shadow: 0 10px 40px rgba(14, 165, 233, 0.15);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: transform 0.3s ease;
+        }
+
+        /* En-tête avec Score et Vies */
+        .header-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 0.8rem 1.5rem;
+            border-radius: 1rem;
+        }
+
+        h1 {
+            margin: 0 0 1rem 0;
+            color: var(--text);
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+        }
+
+        .hint-box {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Zone de saisie */
+        .input-area {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        input {
+            width: 70px;
+            height: 70px;
+            font-size: 2.5rem;
+            text-align: center;
+            border: 2px solid #cbd5e1;
+            border-radius: 1rem;
+            background: white;
+            color: var(--primary);
+            font-weight: 800;
+            text-transform: uppercase;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
+            transform: translateY(-2px);
+        }
+
+        button {
+            padding: 0 2.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(14, 165, 233, 0.2);
+        }
+
+        button:hover {
+            background: #0284c7;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Écrans de fin */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 2rem;
+            z-index: 20;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .big-score {
+            font-size: 5rem;
+            color: var(--primary);
+            font-weight: 800;
+            margin: 1rem 0;
+            text-shadow: 0 4px 10px rgba(14, 165, 233, 0.2);
+        }
+
+        /* Animations */
+        .shake {
+            animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+
+        .pop {
+            animation: pop 0.4s ease-out;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Bienvenue dans le pipeline DevOps</h1> <br>
-    <h2>coucou les totos</h2> <br>
-    <h1>Projet validé avec Docker CI/CD !</h1>
-    <p>Ce site a été testé dans un conteneur avant d'être déployé.</p>
+
+    <!-- Fond animé avec des bulles -->
+    <div class="bubbles-container" id="bubbles-container"></div>
+
+    <!-- Carte principale du jeu -->
+    <div class="game-card" id="gameCard">
+
+        <!-- En-tête : Score et Vies -->
+        <div class="header-stats">
+            <span>🏆 Score : <span id="scoreDisplay">0</span></span>
+            <span>❤️ Vies : <span id="livesDisplay">3</span></span>
+        </div>
+
+        <h1>La Lettre Secrète</h1>
+
+        <!-- Zone d'indice -->
+        <div id="hintBox" class="hint-box">
+            Chargement...
+        </div>
+
+        <!-- Zone de jeu -->
+        <div class="input-area">
+            <input type="text" id="guessInput" maxlength="1" autocomplete="off" placeholder="?">
+            <button onclick="checkGuess()">Valider</button>
+        </div>
+
+        <!-- Écran de Game Over (Caché au début) -->
+        <div id="gameOverOverlay" class="overlay hidden">
+            <h2 style="color: var(--text); margin-bottom: 0;">Partie Terminée</h2>
+            <p style="color: #64748b;">Ton score final</p>
+            <div class="big-score" id="finalScore">0</div>
+            <button onclick="restartGame()">Rejouer</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- CONFIGURATION DU JEU ---
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let secretLetter = "";
+        let lives = 3;
+        let score = 0;
+
+        // Références aux éléments HTML
+        const hintEl = document.getElementById('hintBox');
+        const inputEl = document.getElementById('guessInput');
+        const scoreEl = document.getElementById('scoreDisplay');
+        const livesEl = document.getElementById('livesDisplay');
+        const overlayEl = document.getElementById('gameOverOverlay');
+        const finalScoreEl = document.getElementById('finalScore');
+        const bubblesContainer = document.getElementById('bubbles-container');
+        const gameCard = document.getElementById('gameCard');
+
+        // --- SYSTÈME DE BULLES (Design d'ambiance) ---
+        function createBubble() {
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+
+            // Propriétés aléatoires pour rendre ça naturel
+            const size = Math.random() * 50 + 20 + 'px'; // Taille 20-70px
+            const left = Math.random() * 100 + '%'; // Position horizontale
+            const duration = Math.random() * 15 + 10 + 's'; // Vitesse lente
+            const randomLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
+
+            bubble.style.width = size;
+            bubble.style.height = size;
+            bubble.style.left = left;
+            bubble.style.animationDuration = duration;
+            bubble.innerText = randomLetter;
+
+            bubblesContainer.appendChild(bubble);
+
+            // Suppression automatique après animation pour garder la page légère
+            setTimeout(() => {
+                bubble.remove();
+            }, 25000);
+        }
+
+        // Créer une bulle toutes les 800ms
+        setInterval(createBubble, 800);
+        // Créer quelques bulles au démarrage
+        for (let i = 0; i < 10; i++) setTimeout(createBubble, i * 300);
+
+
+        // --- MOTEUR DU JEU ---
+
+        function startRound() {
+            // 1. Choisir une nouvelle lettre secrète
+            const randomIndex = Math.floor(Math.random() * alphabet.length);
+            secretLetter = alphabet[randomIndex];
+
+            // 2. Générer un indice (une autre lettre)
+            let hintIndex;
+            do { hintIndex = Math.floor(Math.random() * alphabet.length); }
+            while (hintIndex === randomIndex);
+
+            const hintLetter = alphabet[hintIndex];
+            const relation = randomIndex > hintIndex ? "après" : "avant";
+
+            // 3. Afficher l'indice proprement
+            hintEl.innerText = `La lettre est ${relation} ${hintLetter}`;
+            hintEl.style.color = "var(--text)";
+            hintEl.style.borderColor = "#e2e8f0";
+
+            // 4. Reset du champ de texte
+            inputEl.value = "";
+            inputEl.focus();
+        }
+
+        function updateStats() {
+            scoreEl.innerText = score;
+            livesEl.innerText = lives;
+            // Changement de couleur si danger
+            livesEl.style.color = lives === 1 ? "var(--error)" : "var(--primary)";
+        }
+
+        function checkGuess() {
+            const userGuess = inputEl.value.toUpperCase();
+
+            // Ignorer si vide ou pas une lettre
+            if (!alphabet.includes(userGuess) || userGuess === "") return;
+
+            // --- CAS 1 : VICTOIRE (Mode Continu) ---
+            if (userGuess === secretLetter) {
+                score++; // On gagne des points
+                updateStats();
+
+                // Animation de victoire (Flash vert)
+                hintEl.style.borderColor = "var(--success)";
+                hintEl.style.color = "var(--success)";
+                hintEl.innerText = `Bravo ! C'était bien ${secretLetter}`;
+                hintEl.classList.add('pop');
+
+                // Pause de 1s puis on lance la lettre suivante
+                setTimeout(() => {
+                    hintEl.classList.remove('pop');
+                    startRound();
+                }, 1200);
+            }
+
+            // --- CAS 2 : ERREUR ---
+            else {
+                lives--; // On perd une vie
+                updateStats();
+
+                // Animation de secousse (Feedback visuel)
+                gameCard.classList.remove('shake');
+                void gameCard.offsetWidth; // Force le redémarrage de l'anim
+                gameCard.classList.add('shake');
+
+                // On donne un nouvel indice plus précis
+                const relation = secretLetter > userGuess ? "après" : "avant";
+                hintEl.innerText = `Raté ! C'est ${relation} ${userGuess}`;
+                hintEl.style.color = "var(--error)";
+                hintEl.style.borderColor = "var(--error)";
+
+                inputEl.value = "";
+                inputEl.focus();
+
+                // Si plus de vies, Game Over
+                if (lives <= 0) {
+                    gameOver();
+                }
+            }
+        }
+
+        function gameOver() {
+            finalScoreEl.innerText = score;
+            overlayEl.classList.remove('hidden'); // Affiche l'écran de fin
+        }
+
+        function restartGame() {
+            lives = 3;
+            score = 0;
+            updateStats();
+            overlayEl.classList.add('hidden'); // Cache l'écran de fin
+            startRound();
+        }
+
+        // Permet de valider avec la touche Entrée
+        inputEl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkGuess();
+        });
+
+        // Lancement initial
+        startRound();
+        updateStats();
+
+    </script>
 </body>
 
 </html>
