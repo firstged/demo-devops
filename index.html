@@ -17,6 +17,7 @@
             --secondary: #ec4899;
             --glass: rgba(255, 255, 255, 0.95);
             --success: #10b981;
+            --success-bg: #d1fae5;
             --error: #ef4444;
             --gold: #fbbf24;
             --silver: #94a3b8;
@@ -174,12 +175,6 @@
             cursor: pointer;
         }
 
-        .btn-info {
-            background: #3b82f6;
-            color: white;
-            margin-top: 10px;
-        }
-
         .mode-selector {
             display: flex;
             gap: 10px;
@@ -203,6 +198,7 @@
             font-weight: bold;
         }
 
+        /* --- BOITE D'INDICE ET FEEDBACK --- */
         .hint-box {
             background: white;
             border-radius: 16px;
@@ -210,6 +206,15 @@
             text-align: center;
             border: 2px solid #f1f5f9;
             position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* ILLUMINATION VERTE (VICTOIRE) */
+        .hint-box.success-anim {
+            background-color: var(--success-bg);
+            border-color: var(--success);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+            transform: scale(1.05);
         }
 
         .hint-main {
@@ -239,6 +244,24 @@
             align-items: center;
             padding: 12px;
             border-bottom: 1px solid #eee;
+        }
+
+        /* --- REVELATION SECRET --- */
+        .reveal-box {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 10px;
+            border: 2px dashed #cbd5e1;
+        }
+
+        .reveal-letter {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--error);
+            display: inline-block;
+            animation: pop 0.5s;
         }
 
         /* --- MODAL --- */
@@ -427,6 +450,13 @@
                 <div style="font-size: 4rem;">✨</div>
                 <div style="font-size: 3rem; font-weight: 800; color: var(--primary);" id="final-score">0</div>
                 <p>Bien joué <span id="final-name" style="font-weight: bold;"></span> !</p>
+
+                <!-- ZONE DE REVELATION DE LA LETTRE -->
+                <div class="reveal-box">
+                    <div style="font-size: 0.8rem; color: #64748b;">La lettre secrète était :</div>
+                    <div id="reveal-secret" class="reveal-letter">?</div>
+                </div>
+
             </div>
             <button class="btn" onclick="goToHome()">REJOUER</button>
         </div>
@@ -584,8 +614,10 @@
             const box = document.getElementById('hint-box');
             const sub = document.getElementById('encouragement-text');
 
+            // RESET DES STYLES (Important pour enlever le vert)
+            box.classList.remove('success-anim');
+
             if (lastGuess) {
-                // PERSONIFICATION : La lettre parle
                 const rel = gameState.secret > lastGuess ? "APRÈS" : "AVANT";
                 el.innerText = `Je suis ${rel} ${lastGuess}`;
                 box.style.color = "var(--error)";
@@ -629,6 +661,8 @@
         window.submitGuess = () => {
             const inp = document.getElementById('inp-guess');
             const guess = inp.value.toUpperCase();
+            const hintBox = document.getElementById('hint-box');
+
             if (!alphabet.includes(guess) || !guess) return;
 
             if (guess === gameState.secret) {
@@ -640,20 +674,26 @@
                     showToast("+1 Vie Bonus !");
                 }
 
-                // MESSAGE D'ENCOURAGEMENT ALEATOIRE
+                // --- EFFET VICTOIRE (Vert + Animation) ---
                 const randomMsg = congratsMessages[Math.floor(Math.random() * congratsMessages.length)];
                 document.getElementById('hint-text').innerText = randomMsg;
                 document.getElementById('encouragement-text').innerText = `C'était bien ${gameState.secret}`;
-                document.getElementById('hint-box').classList.add('pop');
+
+                // Ajout de la classe CSS verte
+                hintBox.classList.add('success-anim');
+                hintBox.style.color = "var(--success)"; // Force la couleur du texte
 
                 setTimeout(() => {
-                    document.getElementById('hint-box').classList.remove('pop');
+                    // Nettoyage avant le prochain round
+                    hintBox.classList.remove('success-anim');
                     newRound();
                 }, 1200);
+
             } else {
                 gameState.lives--;
                 updateHelper(guess, gameState.secret);
                 updateUI();
+
                 const box = document.getElementById('screen-game');
                 box.classList.remove('shake');
                 void box.offsetWidth;
@@ -685,6 +725,9 @@
         window.gameOver = async () => {
             document.getElementById('final-score').innerText = gameState.score;
             document.getElementById('final-name').innerText = gameState.username;
+
+            // REVELATION DE LA LETTRE (Pour la transparence)
+            document.getElementById('reveal-secret').innerText = gameState.secret;
 
             if (db && gameState.score > 0) {
                 try {
@@ -727,7 +770,6 @@
                     if (data.difficulty === mode) {
                         if (rank <= 10) {
                             let badge = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : rank));
-                            // Ajout du TITRE spécial pour le top 5 (index rank-1)
                             let title = getRankTitle(rank - 1);
 
                             html += `
