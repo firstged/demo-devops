@@ -40,6 +40,38 @@
             align-items: center;
         }
 
+        /* --- FOND ANIMÉ (RESTAURÉ) --- */
+        .bubbles-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+            top: 0;
+            left: 0;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -50px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: bold;
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            to {
+                transform: translateY(-120vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
         /* --- UI COMPONENTS --- */
         .app-container {
             width: 100%;
@@ -281,6 +313,9 @@
 
 <body>
 
+    <!-- CONTENEUR DES BULLES (RESTAURÉ) -->
+    <div class="bubbles-container" id="bubbles"></div>
+
     <div class="app-container">
 
         <!-- 1. HOME SCREEN -->
@@ -466,10 +501,6 @@
             // Tracking Stats (Admin) dans Firebase
             if (db) {
                 try {
-                    const statsRef = doc(db, "stats", "global");
-                    // On essaie d'incrémenter, si le doc n'existe pas on le crée
-                    // Note: setDoc avec merge ne marche pas bien avec increment sur doc vide parfois
-                    // Pour le TP on fait simple : addDoc dans une collection 'games_log'
                     await addDoc(collection(db, "games_log"), {
                         mode: gameState.currentDifficulty,
                         timestamp: new Date()
@@ -610,7 +641,6 @@
         }
 
         function showToast(msg) {
-            // Simple alert visual hack for TP
             const hint = document.getElementById('hint-text');
             const prev = hint.innerText;
             hint.innerText = msg;
@@ -646,10 +676,7 @@
             const list = document.getElementById('leaderboard-list');
             list.innerHTML = '<li style="text-align:center">Chargement...</li>';
 
-            // Highlights buttons
             document.querySelectorAll('#screen-leaderboard .mode-btn').forEach(b => b.classList.remove('selected'));
-            // Hacky way to select button by text content for TP speed
-            // (Better to use IDs in real app)
 
             if (!db) {
                 list.innerHTML = "<li>Base de données non connectée :(</li>";
@@ -659,8 +686,6 @@
             try {
                 const q = query(
                     collection(db, "scores"),
-                    // where("difficulty", "==", mode), // Besoin d'index composite parfois
-                    // On fait simple : on trie par score et on filtre en JS si besoin ou index simple
                     orderBy("score", "desc"),
                     limit(50)
                 );
@@ -671,7 +696,7 @@
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    if (data.difficulty === mode) { // Filtre JS pour éviter erreur index Firestore
+                    if (data.difficulty === mode) {
                         if (rank <= 10) {
                             let badge = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : rank));
                             html += `
@@ -700,7 +725,7 @@
 
         window.verifyAdmin = async () => {
             const pwd = document.getElementById('admin-pwd').value;
-            if (pwd === "admin123") { // Mot de passe "Hardcodé" pour le TP
+            if (pwd === "admin123") {
                 document.getElementById('admin-modal').style.display = 'none';
                 loadAdminStats();
                 showScreen('screen-admin');
@@ -712,7 +737,6 @@
         async function loadAdminStats() {
             if (!db) return;
 
-            // Calculs basiques (lecture brute pour le TP, non optimisé pour prod)
             const logsSnap = await getDocs(collection(db, "games_log"));
             const scoresSnap = await getDocs(query(collection(db, "scores"), orderBy("score", "desc"), limit(1)));
 
@@ -722,7 +746,6 @@
             document.getElementById('stat-total-games').innerText = totalGames;
             document.getElementById('stat-high-score').innerText = highScore;
 
-            // Répartition Modes
             let easy = 0, medium = 0, hard = 0;
             logsSnap.forEach(doc => {
                 const m = doc.data().mode;
@@ -731,7 +754,6 @@
                 else if (m === 'hard') hard++;
             });
 
-            // Graphique
             const ctx = document.getElementById('statsChart').getContext('2d');
             if (window.myChart) window.myChart.destroy();
 
@@ -746,6 +768,22 @@
                 }
             });
         }
+
+        // --- BUBBLES ANIMATION (RESTAURÉ) ---
+        function spawnBubble() {
+            const b = document.createElement('div');
+            b.className = 'bubble';
+            const size = Math.random() * 40 + 20;
+            b.style.width = size + 'px';
+            b.style.height = size + 'px';
+            b.style.left = Math.random() * 100 + '%';
+            b.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            b.innerText = alphabet[Math.floor(Math.random() * 26)];
+            document.getElementById('bubbles').appendChild(b);
+            setTimeout(() => b.remove(), 20000);
+        }
+        setInterval(spawnBubble, 1000);
+        for (let i = 0; i < 10; i++) spawnBubble();
 
         // Support touche Entrée
         document.getElementById('inp-guess').addEventListener('keypress', (e) => {
