@@ -4,9 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>La Lettre Secrète - Online</title>
+    <title>La Lettre Secrète - Ultimate</title>
 
-    <!-- Importation de Chart.js pour les graphiques Admin -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -40,16 +39,16 @@
             align-items: center;
         }
 
-        /* --- FOND ANIMÉ (RESTAURÉ) --- */
+        /* --- BULLES --- */
         .bubbles-container {
             position: absolute;
             width: 100%;
             height: 100%;
+            top: 0;
+            left: 0;
             z-index: 0;
             overflow: hidden;
             pointer-events: none;
-            top: 0;
-            left: 0;
         }
 
         .bubble {
@@ -72,7 +71,7 @@
             }
         }
 
-        /* --- UI COMPONENTS --- */
+        /* --- UI PRINCIPALE --- */
         .app-container {
             width: 100%;
             max-width: 500px;
@@ -125,7 +124,7 @@
             text-align: center;
         }
 
-        /* --- INPUTS & BUTTONS --- */
+        /* --- ÉLÉMENTS INTERACTIFS --- */
         input,
         select {
             width: 100%;
@@ -167,10 +166,20 @@
 
         .btn-danger {
             background: var(--error);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            color: white;
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
         }
 
-        /* --- GAME SPECIFIC --- */
+        .btn-info {
+            background: #3b82f6;
+            color: white;
+            margin-top: 10px;
+        }
+
         .mode-selector {
             display: flex;
             gap: 10px;
@@ -200,6 +209,7 @@
             padding: 1.5rem;
             text-align: center;
             border: 2px solid #f1f5f9;
+            position: relative;
         }
 
         .hint-main {
@@ -210,64 +220,51 @@
             margin-bottom: 5px;
         }
 
-        /* Aide Visuelle (Alphabet) */
-        .alphabet-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            justify-content: center;
-            margin: 10px 0;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 12px;
+        /* --- CLASSEMENT & TITRES --- */
+        .rank-badge {
+            font-size: 1.2rem;
+            margin-right: 8px;
         }
 
-        .alpha-char {
-            width: 25px;
-            height: 25px;
+        .player-title {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            font-weight: bold;
+            display: block;
+        }
+
+        .score-row {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 100;
+            display: none;
             justify-content: center;
             align-items: center;
+        }
+
+        .modal-box {
             background: white;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            color: #64748b;
-            font-weight: bold;
+            padding: 2rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            animation: pop 0.3s;
         }
 
-        .alpha-char.dimmed {
-            opacity: 0.3;
-            background: #cbd5e1;
-        }
-
-        /* Admin Dashboard */
-        .stat-card-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .stat-box {
-            flex: 1;
-            background: white;
-            padding: 10px;
-            border-radius: 10px;
-            text-align: center;
-            border: 1px solid #e2e8f0;
-        }
-
-        .stat-val {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .stat-label {
-            font-size: 0.7rem;
-            color: #64748b;
-        }
-
-        /* Animations */
+        /* --- ANIMATIONS --- */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -308,12 +305,67 @@
                 transform: translateX(5px);
             }
         }
+
+        /* Helpers */
+        .alphabet-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            justify-content: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+        }
+
+        .alpha-char {
+            width: 25px;
+            height: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            color: #64748b;
+            font-weight: bold;
+        }
+
+        .alpha-char.dimmed {
+            opacity: 0.3;
+            background: #cbd5e1;
+        }
+
+        .stat-card-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-box {
+            flex: 1;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-val {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #64748b;
+        }
     </style>
 </head>
 
 <body>
 
-    <!-- CONTENEUR DES BULLES (RESTAURÉ) -->
     <div class="bubbles-container" id="bubbles"></div>
 
     <div class="app-container">
@@ -335,30 +387,31 @@
             </p>
 
             <button class="btn" onclick="startGame()">JOUER</button>
-            <button class="btn btn-secondary" onclick="showLeaderboard()">🏆 CLASSEMENT MONDIAL</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('rules-modal').style.display='flex'">❓
+                COMMENT JOUER</button>
+            <button class="btn btn-secondary" onclick="showLeaderboard()">🏆 CLASSEMENT</button>
 
-            <div style="text-align: center; margin-top: 10px;">
-                <span style="font-size: 0.7rem; color: #94a3b8; cursor: pointer;" onclick="checkAdminAccess()">Admin
-                    Access</span>
+            <div style="text-align: center; margin-top: 5px;">
+                <span style="font-size: 0.7rem; color: #94a3b8; cursor: pointer;"
+                    onclick="checkAdminAccess()">Admin</span>
             </div>
         </div>
 
         <!-- 2. GAME SCREEN -->
         <div id="screen-game" class="screen card">
-            <div style="display: flex; justify-content: space-between; font-weight: bold;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold;">
                 <span id="game-score">Score: 0</span>
-                <span id="game-lives">❤️❤️❤️❤️❤️</span>
+                <!-- BOUTON ABANDONNER -->
+                <button class="btn-danger" onclick="gameOver()">🏳️ Finir</button>
             </div>
+            <div style="text-align: center;" id="game-lives">❤️❤️❤️❤️❤️</div>
 
             <div class="hint-box" id="hint-box">
                 <span class="hint-main" id="hint-text">Chargement...</span>
-                <span style="font-size: 0.8rem; color: #94a3b8;">Trouve la lettre</span>
+                <span style="font-size: 0.8rem; color: #94a3b8;" id="encouragement-text">Trouve la lettre</span>
             </div>
 
-            <!-- Aide visuelle (visible seulement en facile) -->
-            <div id="alphabet-helper" class="alphabet-grid" style="display: none;">
-                <!-- Généré par JS -->
-            </div>
+            <div id="alphabet-helper" class="alphabet-grid" style="display: none;"></div>
 
             <div style="display: flex; gap: 10px;">
                 <input type="text" id="inp-guess" maxlength="1" placeholder="?"
@@ -371,51 +424,61 @@
         <div id="screen-end" class="screen card">
             <h1>Partie Terminée</h1>
             <div style="text-align: center;">
-                <div style="font-size: 4rem;">💀</div>
+                <div style="font-size: 4rem;">✨</div>
                 <div style="font-size: 3rem; font-weight: 800; color: var(--primary);" id="final-score">0</div>
-                <p>Bien joué <span id="final-name"></span> !</p>
+                <p>Bien joué <span id="final-name" style="font-weight: bold;"></span> !</p>
             </div>
-            <button class="btn" onclick="goToHome()">RETOUR ACCUEIL</button>
+            <button class="btn" onclick="goToHome()">REJOUER</button>
         </div>
 
         <!-- 4. LEADERBOARD SCREEN -->
         <div id="screen-leaderboard" class="screen card">
-            <h1>🏆 Top 10</h1>
+            <h1>🏆 Top Joueurs</h1>
             <div class="mode-selector">
                 <button class="mode-btn" onclick="loadLeaderboard('easy')">Facile</button>
                 <button class="mode-btn" onclick="loadLeaderboard('medium')">Moyen</button>
                 <button class="mode-btn" onclick="loadLeaderboard('hard')">Difficile</button>
             </div>
-            <ul id="leaderboard-list" style="padding: 0; list-style: none; overflow-y: auto; flex-grow: 1;">
-                <li style="text-align: center; color: #94a3b8;">Chargement...</li>
-            </ul>
+            <ul id="leaderboard-list" style="padding: 0; list-style: none; overflow-y: auto; flex-grow: 1;"></ul>
             <button class="btn btn-secondary" onclick="goToHome()">RETOUR</button>
         </div>
 
-        <!-- 5. ADMIN DASHBOARD -->
+        <!-- 5. ADMIN SCREEN -->
         <div id="screen-admin" class="screen card" style="background: #f8fafc;">
-            <h1 style="color: var(--secondary)">Admin Dashboard</h1>
-
+            <h1 style="color: var(--secondary)">Admin</h1>
             <div class="stat-card-row">
                 <div class="stat-box">
                     <div class="stat-val" id="stat-total-games">0</div>
-                    <div class="stat-label">Parties Jouées</div>
+                    <div class="stat-label">Parties</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-val" id="stat-high-score">0</div>
-                    <div class="stat-label">Record Absolu</div>
+                    <div class="stat-label">Record</div>
                 </div>
             </div>
-
             <canvas id="statsChart" style="max-height: 200px;"></canvas>
-
-            <button class="btn" onclick="goToHome()">QUITTER ADMIN</button>
+            <button class="btn" onclick="goToHome()">QUITTER</button>
         </div>
 
-        <!-- MODAL PASSWORD -->
-        <div id="admin-modal"
-            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index: 100; justify-content:center; align-items:center;">
-            <div style="background:white; padding:20px; border-radius:12px; width: 80%;">
+        <!-- MODAL REGLES -->
+        <div id="rules-modal" class="modal-overlay">
+            <div class="modal-box">
+                <h2 style="color: var(--primary);">Comment jouer ?</h2>
+                <ul style="text-align: left; line-height: 1.6; color: #334155;">
+                    <li>🤖 Je choisis une lettre secrète.</li>
+                    <li>🔤 Propose une lettre (ex: M).</li>
+                    <li>🗣️ Je te dirai : <strong>"Je suis avant M"</strong> ou <strong>"Je suis après M"</strong>.</li>
+                    <li>❤️ Tu as plusieurs vies. Si tu trouves, tu gagnes des points et on continue !</li>
+                    <li>🏳️ Clique sur "Finir" pour sauvegarder ton score quand tu veux arrêter.</li>
+                </ul>
+                <button class="btn" onclick="document.getElementById('rules-modal').style.display='none'">COMPRIS
+                    !</button>
+            </div>
+        </div>
+
+        <!-- MODAL ADMIN PASSWORD -->
+        <div id="admin-modal" class="modal-overlay">
+            <div class="modal-box">
                 <h3>Code Secret</h3>
                 <input type="password" id="admin-pwd" placeholder="Mot de passe">
                 <button class="btn" style="margin-top:10px;" onclick="verifyAdmin()">Entrer</button>
@@ -426,10 +489,10 @@
 
     </div>
 
-    <!-- FIREBASE SDK (CDN) -->
+    <!-- FIREBASE SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, updateDoc, doc, increment, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         // ============================================================
         // ⚠️⚠️ CONFIGURATION FIREBASE (REMPLACE AVEC TES CLES !) ⚠️⚠️
@@ -443,43 +506,37 @@
             appId: "1:542073811324:web:b7a665424d581f76e3b4f9"
         };
 
-        // Initialisation (Si pas de config, mode hors ligne simulé pour pas crash)
         let db;
         try {
             const app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             console.log("Firebase connecté !");
         } catch (e) {
-            console.error("Erreur Config Firebase. Le jeu marchera en mode dégradé.", e);
+            console.error("Erreur Config Firebase.", e);
         }
 
-        // --- VARIABLES GLOBALES ---
+        // --- VARIABLES ---
         const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const congratsMessages = ["Incroyable !", "Génie !", "Tu es trop fort !", "Machine !", "Bien joué !", "Superbe !", "Excellent !"];
+
         let gameState = {
-            username: "",
-            score: 0,
-            lives: 0,
-            currentDifficulty: "easy",
-            secret: "",
-            roundsWon: 0, // Pour le mode hard
-            gameActive: false
+            username: "", score: 0, lives: 0, currentDifficulty: "easy",
+            secret: "", roundsWon: 0
         };
 
         const difficulties = {
-            easy: { lives: 5, desc: "5 vies/manche + Aide visuelle", help: true },
-            medium: { lives: 4, desc: "4 vies/manche - Classique", help: false },
-            hard: { lives: 5, desc: "5 vies TOTALES (+1 vie tous les 2 wins)", help: false, globalLives: true }
+            easy: { lives: 5, desc: "5 vies + Aide visuelle + Mode Zen", help: true },
+            medium: { lives: 4, desc: "4 vies - Mode Classique", help: false },
+            hard: { lives: 5, desc: "Mode Survie (Vies cumulées)", help: false, globalLives: true }
         };
 
         // --- NAVIGATION ---
         window.goToHome = () => showScreen('screen-home');
-
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        // --- SELECTION DIFFICULTÉ ---
         window.selectMode = (mode) => {
             gameState.currentDifficulty = mode;
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected'));
@@ -494,18 +551,12 @@
             gameState.score = 0;
             gameState.roundsWon = 0;
 
-            // Initialisation vies
             const diff = difficulties[gameState.currentDifficulty];
             gameState.lives = diff.lives;
 
-            // Tracking Stats (Admin) dans Firebase
             if (db) {
-                try {
-                    await addDoc(collection(db, "games_log"), {
-                        mode: gameState.currentDifficulty,
-                        timestamp: new Date()
-                    });
-                } catch (e) { console.log("Stat error", e); }
+                try { await addDoc(collection(db, "games_log"), { mode: gameState.currentDifficulty, timestamp: new Date() }); }
+                catch (e) { }
             }
 
             showScreen('screen-game');
@@ -513,20 +564,14 @@
         };
 
         function newRound(first = false) {
-            // Reset vies si mode NON global (Easy/Medium)
             const diff = difficulties[gameState.currentDifficulty];
-            if (!diff.globalLives && !first) {
-                gameState.lives = diff.lives;
-            }
+            if (!diff.globalLives && !first) gameState.lives = diff.lives;
 
-            // Génération secret
-            const randomIndex = Math.floor(Math.random() * alphabet.length);
-            gameState.secret = alphabet[randomIndex];
+            gameState.secret = alphabet[Math.floor(Math.random() * alphabet.length)];
 
             updateUI();
             generateHint();
 
-            // Générer aide visuelle si Easy
             if (diff.help) generateAlphabetHelper();
             else document.getElementById('alphabet-helper').style.display = 'none';
 
@@ -537,19 +582,22 @@
         function generateHint(lastGuess = null) {
             const el = document.getElementById('hint-text');
             const box = document.getElementById('hint-box');
+            const sub = document.getElementById('encouragement-text');
 
             if (lastGuess) {
+                // PERSONIFICATION : La lettre parle
                 const rel = gameState.secret > lastGuess ? "APRÈS" : "AVANT";
-                el.innerText = `C'est ${rel} ${lastGuess}`;
+                el.innerText = `Je suis ${rel} ${lastGuess}`;
                 box.style.color = "var(--error)";
+                sub.innerText = "Essaie encore !";
             } else {
-                // Indice de départ (lettre random autre que secret)
                 let hint;
                 do { hint = alphabet[Math.floor(Math.random() * alphabet.length)]; }
                 while (hint === gameState.secret);
                 const rel = gameState.secret > hint ? "APRÈS" : "AVANT";
-                el.innerText = `C'est ${rel} ${hint}`;
+                el.innerText = `Je suis ${rel} ${hint}`;
                 box.style.color = "var(--primary)";
+                sub.innerText = "Devine qui je suis...";
             }
         }
 
@@ -567,65 +615,52 @@
         }
 
         function updateHelper(guess, secret) {
-            // Grise les lettres impossibles
             const container = document.getElementById('alphabet-helper');
             if (container.style.display === 'none') return;
-
-            const isAfter = secret > guess; // Le secret est APRES le guess
-
+            const isAfter = secret > guess;
             for (let char of alphabet) {
                 const el = document.getElementById(`alpha-${char}`);
                 if (!el) continue;
-
-                if (isAfter) {
-                    // Si c'est après B, alors A et B sont morts
-                    if (char <= guess) el.classList.add('dimmed');
-                } else {
-                    // Si c'est avant Y, alors Y et Z sont morts
-                    if (char >= guess) el.classList.add('dimmed');
-                }
+                if (isAfter) { if (char <= guess) el.classList.add('dimmed'); }
+                else { if (char >= guess) el.classList.add('dimmed'); }
             }
         }
 
         window.submitGuess = () => {
             const inp = document.getElementById('inp-guess');
             const guess = inp.value.toUpperCase();
-
             if (!alphabet.includes(guess) || !guess) return;
 
-            // VICTOIRE MANCHE
             if (guess === gameState.secret) {
                 gameState.score += 100;
                 gameState.roundsWon++;
 
-                // Mode Hard Bonus
                 if (gameState.currentDifficulty === 'hard' && gameState.roundsWon % 2 === 0) {
                     gameState.lives++;
                     showToast("+1 Vie Bonus !");
                 }
 
-                document.getElementById('hint-text').innerText = `BRAVO ! C'était ${gameState.secret}`;
+                // MESSAGE D'ENCOURAGEMENT ALEATOIRE
+                const randomMsg = congratsMessages[Math.floor(Math.random() * congratsMessages.length)];
+                document.getElementById('hint-text').innerText = randomMsg;
+                document.getElementById('encouragement-text').innerText = `C'était bien ${gameState.secret}`;
                 document.getElementById('hint-box').classList.add('pop');
 
                 setTimeout(() => {
                     document.getElementById('hint-box').classList.remove('pop');
                     newRound();
-                }, 1000);
-            }
-            // ERREUR
-            else {
+                }, 1200);
+            } else {
                 gameState.lives--;
                 updateHelper(guess, gameState.secret);
                 updateUI();
-
                 const box = document.getElementById('screen-game');
                 box.classList.remove('shake');
                 void box.offsetWidth;
                 box.classList.add('shake');
 
-                if (gameState.lives <= 0) {
-                    gameOver();
-                } else {
+                if (gameState.lives <= 0) gameOver();
+                else {
                     generateHint(guess);
                     inp.value = "";
                     inp.focus();
@@ -647,11 +682,10 @@
             setTimeout(() => hint.innerText = prev, 1500);
         }
 
-        async function gameOver() {
+        window.gameOver = async () => {
             document.getElementById('final-score').innerText = gameState.score;
             document.getElementById('final-name').innerText = gameState.username;
 
-            // SAUVEGARDE FIREBASE
             if (db && gameState.score > 0) {
                 try {
                     await addDoc(collection(db, "scores"), {
@@ -660,36 +694,30 @@
                         difficulty: gameState.currentDifficulty,
                         timestamp: new Date()
                     });
-                } catch (e) { console.error("Save error", e); }
+                } catch (e) { }
             }
-
             showScreen('screen-end');
-        }
+        };
 
-        // --- LEADERBOARD ---
+        // --- LEADERBOARD & TITRES ---
         window.showLeaderboard = () => {
             showScreen('screen-leaderboard');
-            loadLeaderboard('easy'); // Defaut
+            loadLeaderboard('easy');
         };
+
+        function getRankTitle(index) {
+            const titles = ["👑 Maître de l'Alphabet", "🔮 Oracle des Lettres", "🕵️ Détective D'élite", "🧠 Grand Stratège", "🎓 Expert Linguiste"];
+            return titles[index] || "👤 Joueur";
+        }
 
         window.loadLeaderboard = async (mode) => {
             const list = document.getElementById('leaderboard-list');
             list.innerHTML = '<li style="text-align:center">Chargement...</li>';
-
             document.querySelectorAll('#screen-leaderboard .mode-btn').forEach(b => b.classList.remove('selected'));
-
-            if (!db) {
-                list.innerHTML = "<li>Base de données non connectée :(</li>";
-                return;
-            }
+            if (!db) { list.innerHTML = "<li>Hors ligne :(</li>"; return; }
 
             try {
-                const q = query(
-                    collection(db, "scores"),
-                    orderBy("score", "desc"),
-                    limit(50)
-                );
-
+                const q = query(collection(db, "scores"), orderBy("score", "desc"), limit(50));
                 const querySnapshot = await getDocs(q);
                 let html = "";
                 let rank = 1;
@@ -699,9 +727,16 @@
                     if (data.difficulty === mode) {
                         if (rank <= 10) {
                             let badge = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : rank));
+                            // Ajout du TITRE spécial pour le top 5 (index rank-1)
+                            let title = getRankTitle(rank - 1);
+
                             html += `
-                                <li style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;">
-                                    <span>${badge} <strong>${data.name}</strong></span>
+                                <li class="score-row">
+                                    <div style="text-align:left;">
+                                        <span class="rank-badge">${badge}</span>
+                                        <strong>${data.name}</strong>
+                                        <span class="player-title">${title}</span>
+                                    </div>
                                     <span style="color:var(--primary); font-weight:bold;">${data.score}</span>
                                 </li>
                             `;
@@ -709,73 +744,42 @@
                         }
                     }
                 });
-
-                list.innerHTML = html || "<li style='text-align:center'>Aucun score pour ce mode</li>";
-
-            } catch (e) {
-                console.error(e);
-                list.innerHTML = "<li>Erreur de chargement (Index manquant ?)</li>";
-            }
+                list.innerHTML = html || "<li style='text-align:center'>Aucun score</li>";
+            } catch (e) { list.innerHTML = "<li>Erreur chargement</li>"; }
         };
 
-        // --- ADMIN DASHBOARD ---
-        window.checkAdminAccess = () => {
-            document.getElementById('admin-modal').style.display = 'flex';
-        };
-
+        // --- ADMIN ---
+        window.checkAdminAccess = () => document.getElementById('admin-modal').style.display = 'flex';
         window.verifyAdmin = async () => {
-            const pwd = document.getElementById('admin-pwd').value;
-            if (pwd === "admin123") {
+            if (document.getElementById('admin-pwd').value === "admin123") {
                 document.getElementById('admin-modal').style.display = 'none';
                 loadAdminStats();
                 showScreen('screen-admin');
-            } else {
-                alert("Accès refusé");
-            }
+            } else alert("Non");
         };
 
         async function loadAdminStats() {
             if (!db) return;
+            const logs = await getDocs(collection(db, "games_log"));
+            const scores = await getDocs(query(collection(db, "scores"), orderBy("score", "desc"), limit(1)));
 
-            const logsSnap = await getDocs(collection(db, "games_log"));
-            const scoresSnap = await getDocs(query(collection(db, "scores"), orderBy("score", "desc"), limit(1)));
+            document.getElementById('stat-total-games').innerText = logs.size;
+            document.getElementById('stat-high-score').innerText = scores.empty ? 0 : scores.docs[0].data().score;
 
-            const totalGames = logsSnap.size;
-            const highScore = scoresSnap.empty ? 0 : scoresSnap.docs[0].data().score;
-
-            document.getElementById('stat-total-games').innerText = totalGames;
-            document.getElementById('stat-high-score').innerText = highScore;
-
-            let easy = 0, medium = 0, hard = 0;
-            logsSnap.forEach(doc => {
-                const m = doc.data().mode;
-                if (m === 'easy') easy++;
-                else if (m === 'medium') medium++;
-                else if (m === 'hard') hard++;
-            });
+            let e = 0, m = 0, h = 0;
+            logs.forEach(doc => { const md = doc.data().mode; if (md === 'easy') e++; else if (md === 'medium') m++; else if (md === 'hard') h++; });
 
             const ctx = document.getElementById('statsChart').getContext('2d');
             if (window.myChart) window.myChart.destroy();
-
-            window.myChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Facile', 'Moyen', 'Difficile'],
-                    datasets: [{
-                        data: [easy, medium, hard],
-                        backgroundColor: ['#fbbf24', '#6366f1', '#ef4444']
-                    }]
-                }
-            });
+            window.myChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Facile', 'Moyen', 'Difficile'], datasets: [{ data: [e, m, h], backgroundColor: ['#fbbf24', '#6366f1', '#ef4444'] }] } });
         }
 
-        // --- BUBBLES ANIMATION (RESTAURÉ) ---
+        // --- BULLES ANIMATION ---
         function spawnBubble() {
             const b = document.createElement('div');
             b.className = 'bubble';
             const size = Math.random() * 40 + 20;
-            b.style.width = size + 'px';
-            b.style.height = size + 'px';
+            b.style.width = size + 'px'; b.style.height = size + 'px';
             b.style.left = Math.random() * 100 + '%';
             b.style.animationDuration = (Math.random() * 10 + 10) + 's';
             b.innerText = alphabet[Math.floor(Math.random() * 26)];
@@ -785,10 +789,7 @@
         setInterval(spawnBubble, 1000);
         for (let i = 0; i < 10; i++) spawnBubble();
 
-        // Support touche Entrée
-        document.getElementById('inp-guess').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') submitGuess();
-        });
+        document.getElementById('inp-guess').addEventListener('keypress', (e) => { if (e.key === 'Enter') submitGuess(); });
 
     </script>
 </body>
