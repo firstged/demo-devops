@@ -3,21 +3,21 @@
 
 <head>
     <meta charset="UTF-8">
-    <!-- Viewport essentiel pour le mobile : empêche le zoom et adapte la taille -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>La Lettre Secrète - Ultimate</title>
+    <title>La Lettre Secrète - Online</title>
+
+    <!-- Importation de Chart.js pour les graphiques Admin -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         :root {
-            --bg-gradient-start: #fdfbfb;
-            --bg-gradient-end: #ebedee;
+            --bg-start: #fdfbfb;
+            --bg-end: #ebedee;
             --primary: #6366f1;
-            /* Indigo moderne */
-            --primary-dark: #4f46e5;
+            --primary-dark: #4338ca;
             --secondary: #ec4899;
-            /* Pink pour le fun */
-            --text: #1e293b;
-            --glass: rgba(255, 255, 255, 0.90);
-            --success: #22c55e;
+            --glass: rgba(255, 255, 255, 0.95);
+            --success: #10b981;
             --error: #ef4444;
             --gold: #fbbf24;
             --silver: #94a3b8;
@@ -27,59 +27,26 @@
         * {
             box-sizing: border-box;
             user-select: none;
+            font-family: 'Segoe UI', system-ui, sans-serif;
         }
 
         body {
             margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
-            color: var(--text);
             height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #a5f3fc 0%, #6366f1 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
         }
 
-        /* --- FOND ANIMÉ --- */
-        .bubbles-container {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .bubble {
-            position: absolute;
-            bottom: -50px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: bold;
-            animation: floatUp linear infinite;
-        }
-
-        @keyframes floatUp {
-            to {
-                transform: translateY(-120vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        /* --- CONTENEUR PRINCIPAL --- */
+        /* --- UI COMPONENTS --- */
         .app-container {
-            position: relative;
-            z-index: 10;
             width: 100%;
             max-width: 500px;
             height: 100%;
-            max-height: 900px;
+            position: relative;
+            z-index: 10;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -88,206 +55,200 @@
 
         .card {
             background: var(--glass);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
             border-radius: 24px;
-            padding: 2rem;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            padding: 1.5rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
-            animation: slideIn 0.4s ease-out;
+            gap: 1rem;
+            animation: fadeIn 0.4s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* --- TYPOGRAPHIE --- */
-        h1 {
-            margin: 0;
-            font-size: 1.8rem;
-            color: var(--primary);
-            letter-spacing: -1px;
-        }
-
-        .subtitle {
-            color: #64748b;
-            margin-top: -10px;
-            font-size: 0.9rem;
-        }
-
-        /* --- ÉCRANS (Start, Game, End) --- */
         .screen {
             display: none;
-            flex-direction: column;
-            gap: 1.5rem;
             height: 100%;
+            flex-direction: column;
             justify-content: center;
+            gap: 1rem;
         }
 
         .screen.active {
             display: flex;
         }
 
-        /* --- INPUTS & BOUTONS --- */
-        input[type="text"] {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.2rem;
+        h1 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.8rem;
             text-align: center;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin: 0;
+            color: #64748b;
+            text-align: center;
+        }
+
+        /* --- INPUTS & BUTTONS --- */
+        input,
+        select {
+            width: 100%;
+            padding: 14px;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
+            font-size: 1rem;
             outline: none;
-            transition: 0.3s;
-            background: white;
+            text-align: center;
         }
 
         input:focus {
             border-color: var(--primary);
         }
 
-        .btn-primary {
+        .btn {
             background: var(--primary);
             color: white;
             border: none;
             padding: 16px;
-            font-size: 1.1rem;
-            font-weight: bold;
             border-radius: 12px;
+            font-weight: bold;
+            font-size: 1rem;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-            transition: transform 0.1s;
             width: 100%;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            transition: 0.2s;
         }
 
-        .btn-primary:active {
+        .btn:active {
             transform: scale(0.98);
         }
 
-        /* --- JEU UI --- */
-        .stats-bar {
-            display: flex;
-            justify-content: space-between;
-            background: rgba(255, 255, 255, 0.6);
-            padding: 10px 15px;
-            border-radius: 12px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        .hint-display {
-            font-size: 1.4rem;
-            font-weight: 800;
-            padding: 2rem;
+        .btn-secondary {
             background: white;
-            border-radius: 16px;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
             color: var(--primary);
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 5px;
+            border: 2px solid var(--primary);
         }
 
-        .hint-sub {
-            font-size: 0.8rem;
-            color: #94a3b8;
-            font-weight: normal;
+        .btn-danger {
+            background: var(--error);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
 
-        .game-input-group {
+        /* --- GAME SPECIFIC --- */
+        .mode-selector {
             display: flex;
             gap: 10px;
+            margin-bottom: 10px;
         }
 
-        .letter-input {
-            width: 70px !important;
-            height: 70px;
-            font-size: 2.5rem !important;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: var(--primary);
-        }
-
-        /* --- LEADERBOARD --- */
-        .leaderboard-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            max-height: 250px;
-            overflow-y: auto;
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #cbd5e1;
             background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .mode-btn.selected {
+            border-color: var(--primary);
+            background: #e0e7ff;
+            color: var(--primary-dark);
+            font-weight: bold;
+        }
+
+        .hint-box {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 2px solid #f1f5f9;
+        }
+
+        .hint-main {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Aide Visuelle (Alphabet) */
+        .alphabet-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            justify-content: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.5);
             border-radius: 12px;
         }
 
-        .score-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            border-bottom: 1px solid #f1f5f9;
-            font-size: 0.9rem;
-        }
-
-        .score-item:last-child {
-            border-bottom: none;
-        }
-
-        .rank-badge {
+        .alpha-char {
             width: 25px;
             height: 25px;
-            border-radius: 50%;
-            background: #e2e8f0;
-            color: #64748b;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .rank-1 .rank-badge {
-            background: var(--gold);
-            color: white;
-        }
-
-        .rank-2 .rank-badge {
-            background: var(--silver);
-            color: white;
-        }
-
-        .rank-3 .rank-badge {
-            background: var(--bronze);
-            color: white;
-        }
-
-        .player-info {
             display: flex;
+            justify-content: center;
             align-items: center;
-            text-align: left;
-        }
-
-        .player-title {
+            background: white;
+            border-radius: 4px;
             font-size: 0.7rem;
-            color: var(--secondary);
-            display: block;
+            color: #64748b;
+            font-weight: bold;
         }
 
-        /* --- ANIMATIONS --- */
+        .alpha-char.dimmed {
+            opacity: 0.3;
+            background: #cbd5e1;
+        }
+
+        /* Admin Dashboard */
+        .stat-card-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-box {
+            flex: 1;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-val {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
         .pop {
-            animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: pop 0.3s;
         }
 
         @keyframes pop {
@@ -315,307 +276,479 @@
                 transform: translateX(5px);
             }
         }
-
-        /* --- RESPONSIVE MOBILE --- */
-        @media (max-width: 480px) {
-            .card {
-                padding: 1.5rem;
-                gap: 1rem;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            .hint-display {
-                font-size: 1.1rem;
-                padding: 1.5rem;
-            }
-
-            .letter-input {
-                width: 60px !important;
-                height: 60px;
-                font-size: 2rem !important;
-            }
-        }
     </style>
 </head>
 
 <body>
 
-    <div class="bubbles-container" id="bubbles"></div>
-
     <div class="app-container">
 
-        <!-- ÉCRAN 1 : ACCUEIL -->
+        <!-- 1. HOME SCREEN -->
         <div id="screen-home" class="screen card active">
-            <div>
-                <h1>La Lettre Secrète</h1>
-                <p class="subtitle">Ultimate Edition</p>
+            <h1>🕵️ La Lettre Secrète</h1>
+            <h2>Edition Connectée</h2>
+
+            <input type="text" id="inp-username" placeholder="Ton Pseudo" maxlength="12">
+
+            <div class="mode-selector">
+                <button class="mode-btn selected" onclick="selectMode('easy')" id="btn-easy">🐣 Facile</button>
+                <button class="mode-btn" onclick="selectMode('medium')" id="btn-medium">😎 Moyen</button>
+                <button class="mode-btn" onclick="selectMode('hard')" id="btn-hard">💀 Difficile</button>
             </div>
-            <div style="font-size: 4rem;">🕵️‍♀️</div>
-            <p>Entre ton pseudo pour rejoindre l'élite des devins.</p>
-            <input type="text" id="username" placeholder="Ton Pseudo (ex: Neo)" maxlength="10">
-            <button class="btn-primary" onclick="startGame()">COMMENCER L'AVENTURE</button>
+            <p id="mode-desc" style="font-size: 0.8rem; color: #64748b; text-align: center; margin: 0;">
+                5 vies par manche + Aide visuelle
+            </p>
+
+            <button class="btn" onclick="startGame()">JOUER</button>
+            <button class="btn btn-secondary" onclick="showLeaderboard()">🏆 CLASSEMENT MONDIAL</button>
+
+            <div style="text-align: center; margin-top: 10px;">
+                <span style="font-size: 0.7rem; color: #94a3b8; cursor: pointer;" onclick="checkAdminAccess()">Admin
+                    Access</span>
+            </div>
         </div>
 
-        <!-- ÉCRAN 2 : JEU -->
+        <!-- 2. GAME SCREEN -->
         <div id="screen-game" class="screen card">
-            <div class="stats-bar">
-                <span>⭐ <span id="score">0</span></span>
-                <span>❤️ <span id="lives">3</span></span>
+            <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                <span id="game-score">Score: 0</span>
+                <span id="game-lives">❤️❤️❤️❤️❤️</span>
             </div>
 
-            <div id="hint-box" class="hint-display">
-                <span id="hint-text">Chargement...</span>
-                <span id="hint-sub" class="hint-sub">Trouve la lettre</span>
+            <div class="hint-box" id="hint-box">
+                <span class="hint-main" id="hint-text">Chargement...</span>
+                <span style="font-size: 0.8rem; color: #94a3b8;">Trouve la lettre</span>
             </div>
 
-            <div class="game-input-group">
-                <input type="text" id="guess" class="letter-input" maxlength="1" placeholder="?">
-                <button class="btn-primary" onclick="submitGuess()" style="width: auto; flex-grow: 1;">OK</button>
+            <!-- Aide visuelle (visible seulement en facile) -->
+            <div id="alphabet-helper" class="alphabet-grid" style="display: none;">
+                <!-- Généré par JS -->
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="inp-guess" maxlength="1" placeholder="?"
+                    style="font-size: 2rem; font-weight: bold; text-transform: uppercase;">
+                <button class="btn" style="width: auto; padding: 0 30px;" onclick="submitGuess()">OK</button>
             </div>
         </div>
 
-        <!-- ÉCRAN 3 : GAME OVER & CLASSEMENT -->
+        <!-- 3. END SCREEN -->
         <div id="screen-end" class="screen card">
-            <div>
-                <h1 style="color: var(--text)">Partie Terminée</h1>
-                <p class="subtitle">Bien joué <span id="end-player-name"></span> !</p>
+            <h1>Partie Terminée</h1>
+            <div style="text-align: center;">
+                <div style="font-size: 4rem;">💀</div>
+                <div style="font-size: 3rem; font-weight: 800; color: var(--primary);" id="final-score">0</div>
+                <p>Bien joué <span id="final-name"></span> !</p>
+            </div>
+            <button class="btn" onclick="goToHome()">RETOUR ACCUEIL</button>
+        </div>
+
+        <!-- 4. LEADERBOARD SCREEN -->
+        <div id="screen-leaderboard" class="screen card">
+            <h1>🏆 Top 10</h1>
+            <div class="mode-selector">
+                <button class="mode-btn" onclick="loadLeaderboard('easy')">Facile</button>
+                <button class="mode-btn" onclick="loadLeaderboard('medium')">Moyen</button>
+                <button class="mode-btn" onclick="loadLeaderboard('hard')">Difficile</button>
+            </div>
+            <ul id="leaderboard-list" style="padding: 0; list-style: none; overflow-y: auto; flex-grow: 1;">
+                <li style="text-align: center; color: #94a3b8;">Chargement...</li>
+            </ul>
+            <button class="btn btn-secondary" onclick="goToHome()">RETOUR</button>
+        </div>
+
+        <!-- 5. ADMIN DASHBOARD -->
+        <div id="screen-admin" class="screen card" style="background: #f8fafc;">
+            <h1 style="color: var(--secondary)">Admin Dashboard</h1>
+
+            <div class="stat-card-row">
+                <div class="stat-box">
+                    <div class="stat-val" id="stat-total-games">0</div>
+                    <div class="stat-label">Parties Jouées</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-val" id="stat-high-score">0</div>
+                    <div class="stat-label">Record Absolu</div>
+                </div>
             </div>
 
-            <div style="background: #f8fafc; padding: 1rem; border-radius: 12px;">
-                <div style="font-size: 0.9rem; color: #64748b;">SCORE FINAL</div>
-                <div style="font-size: 3rem; font-weight: 800; color: var(--primary);" id="end-score">0</div>
-            </div>
+            <canvas id="statsChart" style="max-height: 200px;"></canvas>
 
-            <div style="text-align: left; width: 100%;">
-                <h4 style="margin: 0 0 10px 0;">🏆 Top 10 Légendaire</h4>
-                <ul id="leaderboard" class="leaderboard-list">
-                    <!-- Scores insérés par JS -->
-                </ul>
-            </div>
+            <button class="btn" onclick="goToHome()">QUITTER ADMIN</button>
+        </div>
 
-            <button class="btn-primary" onclick="resetGame()">REJOUER</button>
+        <!-- MODAL PASSWORD -->
+        <div id="admin-modal"
+            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index: 100; justify-content:center; align-items:center;">
+            <div style="background:white; padding:20px; border-radius:12px; width: 80%;">
+                <h3>Code Secret</h3>
+                <input type="password" id="admin-pwd" placeholder="Mot de passe">
+                <button class="btn" style="margin-top:10px;" onclick="verifyAdmin()">Entrer</button>
+                <button class="btn btn-secondary" style="margin-top:5px;"
+                    onclick="document.getElementById('admin-modal').style.display='none'">Annuler</button>
+            </div>
         </div>
 
     </div>
 
-    <script>
-        /* --- CONFIGURATION --- */
+    <!-- FIREBASE SDK (CDN) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, updateDoc, doc, increment, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        // ============================================================
+        // ⚠️⚠️ CONFIGURATION FIREBASE (REMPLACE AVEC TES CLES !) ⚠️⚠️
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyC_TrZQm9T2y20MPiohev3i132V9z8zI1w",
+            authDomain: "devsop-game.firebaseapp.com",
+            projectId: "devsop-game",
+            storageBucket: "devsop-game.firebasestorage.app",
+            messagingSenderId: "542073811324",
+            appId: "1:542073811324:web:b7a665424d581f76e3b4f9"
+        };
+
+        // Initialisation (Si pas de config, mode hors ligne simulé pour pas crash)
+        let db;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            console.log("Firebase connecté !");
+        } catch (e) {
+            console.error("Erreur Config Firebase. Le jeu marchera en mode dégradé.", e);
+        }
+
+        // --- VARIABLES GLOBALES ---
         const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         let gameState = {
-            username: "Joueur",
+            username: "",
             score: 0,
-            lives: 3, // Vies par manche
+            lives: 0,
+            currentDifficulty: "easy",
             secret: "",
-            history: [] // Pour éviter de retomber sur la même lettre tout de suite
+            roundsWon: 0, // Pour le mode hard
+            gameActive: false
         };
 
-        // DOM Elements
-        const screens = {
-            home: document.getElementById('screen-home'),
-            game: document.getElementById('screen-game'),
-            end: document.getElementById('screen-end')
-        };
-        const els = {
-            username: document.getElementById('username'),
-            score: document.getElementById('score'),
-            lives: document.getElementById('lives'),
-            hintText: document.getElementById('hint-text'),
-            hintSub: document.getElementById('hint-sub'),
-            guess: document.getElementById('guess'),
-            hintBox: document.getElementById('hint-box'),
-            endPlayer: document.getElementById('end-player-name'),
-            endScore: document.getElementById('end-score'),
-            leaderboard: document.getElementById('leaderboard')
+        const difficulties = {
+            easy: { lives: 5, desc: "5 vies/manche + Aide visuelle", help: true },
+            medium: { lives: 4, desc: "4 vies/manche - Classique", help: false },
+            hard: { lives: 5, desc: "5 vies TOTALES (+1 vie tous les 2 wins)", help: false, globalLives: true }
         };
 
-        /* --- NAVIGATION --- */
-        function showScreen(name) {
-            Object.values(screens).forEach(s => s.classList.remove('active'));
-            screens[name].classList.add('active');
+        // --- NAVIGATION ---
+        window.goToHome = () => showScreen('screen-home');
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
-        /* --- GAMEPLAY --- */
-        function startGame() {
-            const name = els.username.value.trim();
-            if (!name) {
-                alert("Choisis un pseudo !");
-                return;
-            }
-            gameState.username = name;
+        // --- SELECTION DIFFICULTÉ ---
+        window.selectMode = (mode) => {
+            gameState.currentDifficulty = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('btn-' + mode).classList.add('selected');
+            document.getElementById('mode-desc').innerText = difficulties[mode].desc;
+        };
+
+        // --- JEU ---
+        window.startGame = async () => {
+            const user = document.getElementById('inp-username').value.trim() || "Anonyme";
+            gameState.username = user;
             gameState.score = 0;
-            gameState.history = [];
-            showScreen('game');
-            newRound();
-        }
+            gameState.roundsWon = 0;
 
-        function newRound() {
-            // Reset des vies pour la manche
-            gameState.lives = 3;
+            // Initialisation vies
+            const diff = difficulties[gameState.currentDifficulty];
+            gameState.lives = diff.lives;
+
+            // Tracking Stats (Admin) dans Firebase
+            if (db) {
+                try {
+                    const statsRef = doc(db, "stats", "global");
+                    // On essaie d'incrémenter, si le doc n'existe pas on le crée
+                    // Note: setDoc avec merge ne marche pas bien avec increment sur doc vide parfois
+                    // Pour le TP on fait simple : addDoc dans une collection 'games_log'
+                    await addDoc(collection(db, "games_log"), {
+                        mode: gameState.currentDifficulty,
+                        timestamp: new Date()
+                    });
+                } catch (e) { console.log("Stat error", e); }
+            }
+
+            showScreen('screen-game');
+            newRound(true);
+        };
+
+        function newRound(first = false) {
+            // Reset vies si mode NON global (Easy/Medium)
+            const diff = difficulties[gameState.currentDifficulty];
+            if (!diff.globalLives && !first) {
+                gameState.lives = diff.lives;
+            }
+
+            // Génération secret
+            const randomIndex = Math.floor(Math.random() * alphabet.length);
+            gameState.secret = alphabet[randomIndex];
+
             updateUI();
-
-            // Choix lettre (éviter la répétition immédiate)
-            let newSecret;
-            do {
-                newSecret = alphabet[Math.floor(Math.random() * alphabet.length)];
-            } while (gameState.history.includes(newSecret) && gameState.history.length < 20);
-
-            gameState.secret = newSecret;
-            gameState.history.push(newSecret);
-
-            // Indice initial
             generateHint();
 
-            els.guess.value = "";
-            els.guess.focus();
+            // Générer aide visuelle si Easy
+            if (diff.help) generateAlphabetHelper();
+            else document.getElementById('alphabet-helper').style.display = 'none';
+
+            document.getElementById('inp-guess').value = "";
+            document.getElementById('inp-guess').focus();
         }
 
         function generateHint(lastGuess = null) {
-            let hintLetter;
-            let relation;
+            const el = document.getElementById('hint-text');
+            const box = document.getElementById('hint-box');
 
             if (lastGuess) {
-                // Indice intelligent basé sur l'erreur
-                relation = gameState.secret > lastGuess ? "après" : "avant";
-                hintLetter = lastGuess;
+                const rel = gameState.secret > lastGuess ? "APRÈS" : "AVANT";
+                el.innerText = `C'est ${rel} ${lastGuess}`;
+                box.style.color = "var(--error)";
             } else {
-                // Indice aléatoire au début
-                do {
-                    hintLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
-                } while (hintLetter === gameState.secret);
-                relation = gameState.secret > hintLetter ? "après" : "avant";
+                // Indice de départ (lettre random autre que secret)
+                let hint;
+                do { hint = alphabet[Math.floor(Math.random() * alphabet.length)]; }
+                while (hint === gameState.secret);
+                const rel = gameState.secret > hint ? "APRÈS" : "AVANT";
+                el.innerText = `C'est ${rel} ${hint}`;
+                box.style.color = "var(--primary)";
             }
-
-            els.hintText.innerText = `C'est ${relation} ${hintLetter}`;
-            els.hintSub.innerText = `Devine la lettre secrète`;
-            els.hintBox.style.color = "var(--primary)";
         }
 
-        function submitGuess() {
-            const guess = els.guess.value.toUpperCase();
+        function generateAlphabetHelper() {
+            const container = document.getElementById('alphabet-helper');
+            container.style.display = 'flex';
+            container.innerHTML = '';
+            for (let char of alphabet) {
+                const div = document.createElement('div');
+                div.className = 'alpha-char';
+                div.innerText = char;
+                div.id = `alpha-${char}`;
+                container.appendChild(div);
+            }
+        }
+
+        function updateHelper(guess, secret) {
+            // Grise les lettres impossibles
+            const container = document.getElementById('alphabet-helper');
+            if (container.style.display === 'none') return;
+
+            const isAfter = secret > guess; // Le secret est APRES le guess
+
+            for (let char of alphabet) {
+                const el = document.getElementById(`alpha-${char}`);
+                if (!el) continue;
+
+                if (isAfter) {
+                    // Si c'est après B, alors A et B sont morts
+                    if (char <= guess) el.classList.add('dimmed');
+                } else {
+                    // Si c'est avant Y, alors Y et Z sont morts
+                    if (char >= guess) el.classList.add('dimmed');
+                }
+            }
+        }
+
+        window.submitGuess = () => {
+            const inp = document.getElementById('inp-guess');
+            const guess = inp.value.toUpperCase();
+
             if (!alphabet.includes(guess) || !guess) return;
 
             // VICTOIRE MANCHE
             if (guess === gameState.secret) {
-                gameState.score += 10 + (gameState.lives * 5); // Bonus si trouvé vite
-                els.hintBox.style.color = "var(--success)";
-                els.hintText.innerText = `BRAVO ! C'était ${gameState.secret}`;
-                els.hintSub.innerText = "+ Points bonus !";
-                els.hintBox.classList.add('pop');
+                gameState.score += 100;
+                gameState.roundsWon++;
+
+                // Mode Hard Bonus
+                if (gameState.currentDifficulty === 'hard' && gameState.roundsWon % 2 === 0) {
+                    gameState.lives++;
+                    showToast("+1 Vie Bonus !");
+                }
+
+                document.getElementById('hint-text').innerText = `BRAVO ! C'était ${gameState.secret}`;
+                document.getElementById('hint-box').classList.add('pop');
 
                 setTimeout(() => {
-                    els.hintBox.classList.remove('pop');
+                    document.getElementById('hint-box').classList.remove('pop');
                     newRound();
-                }, 1200);
+                }, 1000);
             }
             // ERREUR
             else {
                 gameState.lives--;
+                updateHelper(guess, gameState.secret);
                 updateUI();
 
-                // Feedback visuel
-                const card = document.querySelector('#screen-game');
-                card.classList.remove('shake');
-                void card.offsetWidth;
-                card.classList.add('shake');
+                const box = document.getElementById('screen-game');
+                box.classList.remove('shake');
+                void box.offsetWidth;
+                box.classList.add('shake');
 
                 if (gameState.lives <= 0) {
                     gameOver();
                 } else {
                     generateHint(guess);
-                    els.hintBox.style.color = "var(--error)";
-                    els.guess.value = "";
-                    els.guess.focus();
+                    inp.value = "";
+                    inp.focus();
                 }
             }
-        }
+        };
 
         function updateUI() {
-            els.score.innerText = gameState.score;
-            // Affiche les coeurs
-            els.lives.innerText = "❤️".repeat(gameState.lives);
+            document.getElementById('game-score').innerText = `Score: ${gameState.score}`;
+            let hearts = "";
+            for (let i = 0; i < gameState.lives; i++) hearts += "❤️";
+            document.getElementById('game-lives').innerText = hearts;
         }
 
-        function gameOver() {
-            saveScore(gameState.username, gameState.score);
-            els.endPlayer.innerText = gameState.username;
-            els.endScore.innerText = gameState.score;
-            renderLeaderboard();
-            showScreen('end');
+        function showToast(msg) {
+            // Simple alert visual hack for TP
+            const hint = document.getElementById('hint-text');
+            const prev = hint.innerText;
+            hint.innerText = msg;
+            setTimeout(() => hint.innerText = prev, 1500);
         }
 
-        function resetGame() {
-            showScreen('home');
+        async function gameOver() {
+            document.getElementById('final-score').innerText = gameState.score;
+            document.getElementById('final-name').innerText = gameState.username;
+
+            // SAUVEGARDE FIREBASE
+            if (db && gameState.score > 0) {
+                try {
+                    await addDoc(collection(db, "scores"), {
+                        name: gameState.username,
+                        score: gameState.score,
+                        difficulty: gameState.currentDifficulty,
+                        timestamp: new Date()
+                    });
+                } catch (e) { console.error("Save error", e); }
+            }
+
+            showScreen('screen-end');
         }
 
-        /* --- LEADERBOARD SYSTEM (Simulation LocalStorage) --- */
-        // Titres basés sur le rang
-        const getTitle = (rank) => {
-            if (rank === 0) return "👑 Boss des Secrets";
-            if (rank === 1) return "⚔️ Devin Suprême";
-            if (rank === 2) return "🔮 Oracle";
-            if (rank < 5) return "🧠 Grand Esprit";
-            return "🐣 Apprenti";
+        // --- LEADERBOARD ---
+        window.showLeaderboard = () => {
+            showScreen('screen-leaderboard');
+            loadLeaderboard('easy'); // Defaut
+        };
+
+        window.loadLeaderboard = async (mode) => {
+            const list = document.getElementById('leaderboard-list');
+            list.innerHTML = '<li style="text-align:center">Chargement...</li>';
+
+            // Highlights buttons
+            document.querySelectorAll('#screen-leaderboard .mode-btn').forEach(b => b.classList.remove('selected'));
+            // Hacky way to select button by text content for TP speed
+            // (Better to use IDs in real app)
+
+            if (!db) {
+                list.innerHTML = "<li>Base de données non connectée :(</li>";
+                return;
+            }
+
+            try {
+                const q = query(
+                    collection(db, "scores"),
+                    // where("difficulty", "==", mode), // Besoin d'index composite parfois
+                    // On fait simple : on trie par score et on filtre en JS si besoin ou index simple
+                    orderBy("score", "desc"),
+                    limit(50)
+                );
+
+                const querySnapshot = await getDocs(q);
+                let html = "";
+                let rank = 1;
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.difficulty === mode) { // Filtre JS pour éviter erreur index Firestore
+                        if (rank <= 10) {
+                            let badge = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : rank));
+                            html += `
+                                <li style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;">
+                                    <span>${badge} <strong>${data.name}</strong></span>
+                                    <span style="color:var(--primary); font-weight:bold;">${data.score}</span>
+                                </li>
+                            `;
+                            rank++;
+                        }
+                    }
+                });
+
+                list.innerHTML = html || "<li style='text-align:center'>Aucun score pour ce mode</li>";
+
+            } catch (e) {
+                console.error(e);
+                list.innerHTML = "<li>Erreur de chargement (Index manquant ?)</li>";
+            }
+        };
+
+        // --- ADMIN DASHBOARD ---
+        window.checkAdminAccess = () => {
+            document.getElementById('admin-modal').style.display = 'flex';
+        };
+
+        window.verifyAdmin = async () => {
+            const pwd = document.getElementById('admin-pwd').value;
+            if (pwd === "admin123") { // Mot de passe "Hardcodé" pour le TP
+                document.getElementById('admin-modal').style.display = 'none';
+                loadAdminStats();
+                showScreen('screen-admin');
+            } else {
+                alert("Accès refusé");
+            }
+        };
+
+        async function loadAdminStats() {
+            if (!db) return;
+
+            // Calculs basiques (lecture brute pour le TP, non optimisé pour prod)
+            const logsSnap = await getDocs(collection(db, "games_log"));
+            const scoresSnap = await getDocs(query(collection(db, "scores"), orderBy("score", "desc"), limit(1)));
+
+            const totalGames = logsSnap.size;
+            const highScore = scoresSnap.empty ? 0 : scoresSnap.docs[0].data().score;
+
+            document.getElementById('stat-total-games').innerText = totalGames;
+            document.getElementById('stat-high-score').innerText = highScore;
+
+            // Répartition Modes
+            let easy = 0, medium = 0, hard = 0;
+            logsSnap.forEach(doc => {
+                const m = doc.data().mode;
+                if (m === 'easy') easy++;
+                else if (m === 'medium') medium++;
+                else if (m === 'hard') hard++;
+            });
+
+            // Graphique
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            if (window.myChart) window.myChart.destroy();
+
+            window.myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Facile', 'Moyen', 'Difficile'],
+                    datasets: [{
+                        data: [easy, medium, hard],
+                        backgroundColor: ['#fbbf24', '#6366f1', '#ef4444']
+                    }]
+                }
+            });
         }
 
-        function getLeaderboard() {
-            const stored = localStorage.getItem('devops_game_scores');
-            if (stored) return JSON.parse(stored);
-
-            // Données initiales (Fake players pour motiver)
-            return [
-                { name: "AlphaDev", score: 500 },
-                { name: "DockerKing", score: 320 },
-                { name: "GitMaster", score: 150 }
-            ];
-        }
-
-        function saveScore(name, score) {
-            let scores = getLeaderboard();
-            scores.push({ name, score });
-            // Tri décroissant
-            scores.sort((a, b) => b.score - a.score);
-            // Garder Top 10
-            scores = scores.slice(0, 10);
-            localStorage.setItem('devops_game_scores', JSON.stringify(scores));
-        }
-
-        function renderLeaderboard() {
-            const scores = getLeaderboard();
-            els.leaderboard.innerHTML = scores.map((s, index) => `
-                <li class="score-item rank-${index + 1}">
-                    <div class="player-info">
-                        <span class="rank-badge">${index + 1}</span>
-                        <div>
-                            <strong>${s.name}</strong>
-                            <span class="player-title">${getTitle(index)}</span>
-                        </div>
-                    </div>
-                    <strong>${s.score} pts</strong>
-                </li>
-            `).join('');
-        }
-
-        /* --- BACKGROUND BUBBLES --- */
-        function spawnBubble() {
-            const b = document.createElement('div');
-            b.className = 'bubble';
-            const size = Math.random() * 40 + 20;
-            b.style.width = size + 'px';
-            b.style.height = size + 'px';
-            b.style.left = Math.random() * 100 + '%';
-            b.style.animationDuration = (Math.random() * 10 + 10) + 's';
-            b.innerText = alphabet[Math.floor(Math.random() * 26)];
-            document.getElementById('bubbles').appendChild(b);
-            setTimeout(() => b.remove(), 20000);
-        }
-        setInterval(spawnBubble, 1000);
-        for (let i = 0; i < 10; i++) spawnBubble();
-
-        /* --- EVENTS --- */
-        els.guess.addEventListener('keypress', (e) => {
+        // Support touche Entrée
+        document.getElementById('inp-guess').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') submitGuess();
         });
 
